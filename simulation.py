@@ -1,4 +1,5 @@
 from random import randrange
+from re import A
 
 # sets up width, height, and array
 width = 20
@@ -62,7 +63,7 @@ class Turtle:
         array[x][y].append(self)
 
     # it checks all 8 slots around this animal's position. If one is empty, it creates a new animal in that slot. When the coral snakes reproduce, their mimicry changes a bit
-    def reproduce(self, other_animal=None):
+    def reproduce(self):
         x = self.x
         y = self.y
         reproduced = False
@@ -79,10 +80,7 @@ class Turtle:
                             if self.__class__.__name__ == "Coral_Snake":
                                 # need to make it so that coral snakes take both their parents' mimicries and then average it as their own mimicry.
                                 list_of_coral_snakes.append(
-                                    Coral_Snake(
-                                        (x + i - 2), (y + j - 2), 
-                                        mimicry=((self.get_mimicry() + other_animal.get_mimicry())/2)
-                                        )
+                                    Coral_Snake((x + i - 2), (y + j - 2), mimicry=self.get_mimicry())
                                     )
                             elif self.__class__.__name__ == "King_Snake":
                                 list_of_king_snakes.append(King_Snake((x + i - 2), (y + j - 2)))
@@ -143,14 +141,14 @@ class Bull_Frog(Turtle):
 
 # this makes all the animals move one square in a random direction or stay in their current square.
 for animal in list_of_coral_snakes + list_of_king_snakes + list_of_bull_frogs:
-    rand = randrange(5)
-    if rand == 1:
+    rand = randrange(4)
+    if rand == 0:
         direction = "up"
-    elif rand == 2:
+    elif rand == 1:
         direction = "down"
-    elif rand == 3:
+    elif rand == 2:
         direction = "left"
-    elif rand == 4:
+    elif rand == 3:
         direction = "right"
     else:
         direction = None
@@ -169,28 +167,82 @@ for i in array:
             for animal in array[i][j]:
                 if isinstance(animal, Bull_Frog):
                     list_of_bull_frogs_in_square.append(animal)
-                elif isinstance(animal, Bull_Frog):
-                    list_of_bull_frogs_in_square.append(animal)
-                elif isinstance(animal, Bull_Frog):
-                    list_of_bull_frogs_in_square.append(animal)
+                elif isinstance(animal, Coral_Snake):
+                    list_of_coral_snakes_in_square.append(animal)
+                elif isinstance(animal, King_Snake):
+                    list_of_king_snakes_in_square.append(animal)
             
             # first the bull frogs eat the snakes
             # each bullfrog eats one snake. 
             # if there are no snakes in the square, each square can support up to one bullfrog.
             # if there is one bullfrog and one snake in the square, the bullfrog will eat the snake rather than the unsimulated wildlife.
             # any bullfrog that do not have food, such as three bullfrogs and one snake, will starve. In that scenario, one bullfrog starves.
+            for bull_frog in list_of_bull_frogs_in_square:
+                # 1/2 chance the bullfrog eats each type of snake, and there must be at least one snake of that type.
+                if randrange(2) == 0 and len(list_of_coral_snakes_in_square) > 0:
+                    # there is a 50% chance the coral snake survives
+                    if randrange(2) == 0:
+                        list_of_coral_snakes_in_square[0].has_died()
+                        list_of_coral_snakes_in_square.pop(0)
+                    # there is a 60% chance the bullfrog survives (based on scientific evidence). 
+                    if randrange(10) in range(4):
+                        bull_frog.has_died()
+                        list_of_bull_frogs_in_square.remove(bull_frog)
+                elif len(list_of_king_snakes_in_square) > 0:
+                    list_of_king_snakes_in_square[0].has_died()
+                    list_of_king_snakes_in_square.pop(0)
+                # if the bullfrog cannot eat it dies
+                else:
+                    bull_frog.has_died()
+            
+            # animals are marked as having survived another round:
+            for animal in array[i][j]:
+                animal.survived_another_round()
+            
+            # snakes that have survived three rounds reproduce. Check if this number makes sense. 
+            for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
+                if snake.get_rounds_survived() % 4 == 0:
+                    snake.reproduce()
+            
+            # bullfrogs that have survived five rounds reproduce. Check if this number makes sense.
+            for bullfrog in list_of_bull_frogs_in_square:
+                if bullfrog.get_rounds_survived() % 4 == 0:
+                    bullfrog.reproduce()
+            
+            # if there is more than one snake in a square, further snakes will starve
+            first = False
+            for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
+                if not first:
+                    snake.has_died()
+                    if isinstance(snake, Coral_Snake):
+                        list_of_coral_snakes_in_square.remove(snake)
+                    else:
+                        list_of_king_snakes_in_square.remove(snake)
+                else:
+                    first = True
+            
+            
+            
+
+
 
             # eating code
+            # done
 
             # bullfrog starving code
+            # done
 
             # each square can support only one snake population. If there are two snakes, one will starve.
+            # done
 
             # snake starving code
+            # done
 
             # now snakes and bullfrogs that survived the round will reproduce.
+            # done, with the change that animals produce before starvation
 
             # animals reproducing code. 
+            # done
 
             # each square can only visually support one bullfrog and one snake. Therefore, if there are two or more bullfrogs in
             # one square at the end of the round, the second bullfrog must move to a nearby square. If none are available
