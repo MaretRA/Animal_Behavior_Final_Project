@@ -4,7 +4,7 @@ import tkinter as tk #apparently turtles only really works with tkinter
 import random
 
 # I'm assuming we're just going to be using square-shaped grid spaces
-rolumns = 4 # rolumns = rows & columns
+rolumns = 10 # rolumns = rows & columns
 dimension = 1000 # the total height and length of grid 
 halfdimension = dimension/2
 boxwidth = dimension/rolumns
@@ -20,23 +20,17 @@ activeturtles = [] #list of dictionaries to represent active turtles with attrib
 					#try to make the adjustment (to spare you from dealing with my messy code)
 
 def randomspawn():
-	if (int(spawn_input.get()) > len(gridturtles)):
+	state.set("Spawning")
+	if (int(spawn_input.get()) > (len(gridturtles)-len(activeturtles))):
 		print("cannot spawn that many turtles")
+		message.set('Spawn failed: \n Too little space / Loading')
 	else:
 		for i in range(int(spawn_input.get())):
-			randomx = random.randrange(len(pos)) #probably could've just used rolumns, 
-			randomy = random.randrange(len(pos[randomx])) #but wanted to be prepared for any circumstance
-			#if the grid space is already taken by an active turtle, tries generating another coordinate pair
-			if (f"{randomx}, {randomy}" in occupiedspace):
-				randomspawnonce()
-			else:
-				gridturtle = pos[randomx][randomy]
-				newturtle = gridturtle.clone()
-				newturtle.showturtle()
-				occupiedspace.append(f"{randomx}, {randomy}")
-				turtleinfo = {	'object': newturtle, 
-								'currentpos': f'{randomx}, {randomy}'}
-				activeturtles.append(turtleinfo)
+			randomspawnonce()
+	#population_size['text'] = f'{len(activeturtles)}'
+	population.set(f'{len(activeturtles)}')
+	state.set("Ready to Spawn")
+
 def randomspawnonce():
 	randomx = random.randrange(len(pos))  
 	randomy = random.randrange(len(pos[randomx])) 	
@@ -50,22 +44,44 @@ def randomspawnonce():
 		turtleinfo = {	'object': newturtle, 
 						'currentpos': f'{randomx}, {randomy}'}
 		activeturtles.append(turtleinfo)
-def press():
-    do_stuff()
-
 
 if __name__ == "__main__":
     screen = turtle.Screen()
+    screen.title("Simulation")
     screen.setup(1560, 1080)
     screen.bgcolor("white")
     canvas = screen.getcanvas()
+
     button = tk.Button(canvas.master, text="Randomly Spawn", command=randomspawn)
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+3*ui_offset, window=button)
     spawn_input = tk.Entry()
     spawnamount = spawn_input.get()
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+4*ui_offset, window=spawn_input)
-    
+    population = tk.StringVar(canvas.master, '0')
+    population_size = tk.Label (canvas.master, textvariable =population)
+    state = tk.StringVar(canvas.master, 'Loading')
+    simulationstate = tk.Label (canvas.master, textvariable =state)
+    message = tk.StringVar(canvas.master, 'Welcome to the simulation! \n Start by spawning turtles')
+    systemmessage = tk.Label (canvas.master, textvariable =message)
 
+    populationtext = tk.StringVar(canvas.master, 'Number of turtles')
+    populationlabel = tk.Label (canvas.master, textvariable = populationtext)
+    statetext = tk.StringVar(canvas.master, 'Current State')
+    statelabel = tk.Label (canvas.master, textvariable = statetext)
+    inputtext = tk.StringVar(canvas.master, 'Number of Turtles\n to Add')
+    inputlabel = tk.Label (canvas.master, textvariable = inputtext)
+    messagelabeltext = tk.StringVar(canvas.master, 'Console')
+    messagelabel = tk.Label (canvas.master, textvariable = messagelabeltext)
+
+    canvas.create_window(-halfdimension-ui_offset, -halfdimension+2.6*ui_offset, window=button)
+    canvas.create_window(-halfdimension-ui_offset, -halfdimension+2.2*ui_offset, window=spawn_input)
+    canvas.create_window(-halfdimension-ui_offset, -halfdimension+3.1*ui_offset, window=population_size)
+    canvas.create_window(-halfdimension-ui_offset, -halfdimension+1.6*ui_offset, window=simulationstate)
+    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+3*ui_offset, window=populationlabel)
+    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+1.5*ui_offset, window=statelabel)
+    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+2.1*ui_offset, window=inputlabel)
+    canvas.create_window(-halfdimension-ui_offset, -halfdimension+.85*ui_offset, window=systemmessage)
+    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+.75*ui_offset, window=messagelabel)
+
+state.set('Creating Grid')
 t = turtle.Turtle()
 t.hideturtle()
 t.speed(100000)
@@ -100,5 +116,6 @@ for a in range(rolumns):
 		gridturtles.append(t.clone())
 	pos.append(ypos)
 	ypos = []
+state.set("Ready to Spawn")
 
 turtle.done()
