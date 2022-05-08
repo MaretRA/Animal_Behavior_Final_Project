@@ -20,9 +20,12 @@ def get_height():
 # vertically in that array. Therefore it is limitless.
 array = [[[]] * height] * width
 
-print("array:")
-print(array)
-print("\n\n")
+# debug
+# print("array:")
+# print(array)
+# print("\n\n")
+# print(len(array))
+# print(len(array[0]))
 
 
 # creates lists of all animals
@@ -35,6 +38,7 @@ list_of_bull_frogs = []
 class Turtle:
 
     def __init__(self, x_position, y_position):
+        print("x and y position: %s %s" % (x_position, y_position))
         self.x = x_position
         self.y = y_position
         array[x_position][y_position].append(self)
