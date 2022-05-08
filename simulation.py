@@ -20,6 +20,10 @@ def get_height():
 # vertically in that array. Therefore it is limitless.
 array = [[[]] * height] * width
 
+print("array:")
+print(array)
+print("\n\n")
+
 
 # creates lists of all animals
 list_of_coral_snakes = []
@@ -211,6 +215,8 @@ def game_round():
     for i in range(len(array)):
         for j in range(len(array[i])):
             # only proceeds if the list isn't empty
+            print("\n\n At array[%s][%s]:" % (i, j))
+            print(array[i][j])
             if array[i][j]:
                 list_of_bull_frogs_in_square = []
                 list_of_coral_snakes_in_square = []
