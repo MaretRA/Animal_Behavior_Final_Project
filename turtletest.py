@@ -2,6 +2,9 @@ import turtle
 import PyQt5 #in case we find a way to use it
 import tkinter as tk #apparently turtles only really works with tkinter
 import random
+from tkinter import *
+import numpy
+import matplotlib.pyplot as plot
 
 # I'm assuming we're just going to be using square-shaped grid spaces
 rolumns = 10 # rolumns = rows & columns
@@ -20,16 +23,19 @@ activeturtles = [] #list of dictionaries to represent active turtles with attrib
 					#try to make the adjustment (to spare you from dealing with my messy code)
 
 def randomspawn():
-	state.set("Spawning")
-	if (int(spawn_input.get()) > (len(gridturtles)-len(activeturtles))):
-		print("cannot spawn that many turtles")
-		message.set('Spawn failed: \n Too little space / Loading')
+	if (state.get() == "Ready to Spawn"):
+		state.set("Spawning")
+		if (int(spawn_input.get()) > (len(gridturtles)-len(activeturtles))):
+			message.set('Spawn failed: \n Too little space / Loading')
+		else:
+			for i in range(int(spawn_input.get())):
+				randomspawnonce()
+		#population_size['text'] = f'{len(activeturtles)}'
+		population.set(f'{len(activeturtles)}')
+		state.set("Ready to Spawn")
 	else:
-		for i in range(int(spawn_input.get())):
-			randomspawnonce()
-	#population_size['text'] = f'{len(activeturtles)}'
-	population.set(f'{len(activeturtles)}')
-	state.set("Ready to Spawn")
+		message.set('Wait for the "Ready" State')
+#		plot_cont()
 
 def randomspawnonce():
 	randomx = random.randrange(len(pos))  
@@ -44,6 +50,9 @@ def randomspawnonce():
 		turtleinfo = {	'object': newturtle, 
 						'currentpos': f'{randomx}, {randomy}'}
 		activeturtles.append(turtleinfo)
+def makemodule(coefficientx, coefficienty, module):
+	canvas.create_window(-halfdimension-(1+coefficientx)*ui_offset, 
+		-halfdimension+coefficienty*ui_offset, window =module)
 
 if __name__ == "__main__":
     screen = turtle.Screen()
@@ -53,7 +62,7 @@ if __name__ == "__main__":
     canvas = screen.getcanvas()
 
     button = tk.Button(canvas.master, text="Randomly Spawn", command=randomspawn)
-    spawn_input = tk.Entry()
+    spawn_input = tk.Scale(canvas.master, from_ = len(gridturtles), orient=HORIZONTAL)
     spawnamount = spawn_input.get()
     population = tk.StringVar(canvas.master, '0')
     population_size = tk.Label (canvas.master, textvariable =population)
@@ -71,15 +80,30 @@ if __name__ == "__main__":
     messagelabeltext = tk.StringVar(canvas.master, 'Console')
     messagelabel = tk.Label (canvas.master, textvariable = messagelabeltext)
 
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+2.6*ui_offset, window=button)
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+2.2*ui_offset, window=spawn_input)
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+3.1*ui_offset, window=population_size)
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+1.6*ui_offset, window=simulationstate)
-    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+3*ui_offset, window=populationlabel)
-    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+1.5*ui_offset, window=statelabel)
-    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+2.1*ui_offset, window=inputlabel)
-    canvas.create_window(-halfdimension-ui_offset, -halfdimension+.85*ui_offset, window=systemmessage)
-    canvas.create_window(-halfdimension-ui_offset-1.25*ui_offset, -halfdimension+.75*ui_offset, window=messagelabel)
+    makemodule(0, 2.6, button)
+    makemodule(0, 2.2, spawn_input)
+    makemodule(0, 3.1, population_size)
+    makemodule(0, 1.6, simulationstate)
+    makemodule(1.25, 3, populationlabel)
+    makemodule(1.25, 1.5, statelabel)
+    makemodule(0, .85, systemmessage)
+    makemodule(1.25, 2.1, inputlabel)
+    makemodule(1.25, .75, messagelabel)
+
+#y = []
+#def plot_cont():
+#    fig = plot.figure()
+#    ax = fig.add_subplot(1,1,1)
+#
+#    def update(i):
+#        yi = len(activeturtles)
+#        y.append(yi)
+#        x = range(len(y))
+ #       ax.clear()
+#        ax.plot(x, y)
+#
+#    a = anim.FuncAnimation(fig, update)
+#    plot.show()
 
 state.set('Creating Grid')
 t = turtle.Turtle()
@@ -116,6 +140,8 @@ for a in range(rolumns):
 		gridturtles.append(t.clone())
 	pos.append(ypos)
 	ypos = []
+
+
 state.set("Ready to Spawn")
 
 turtle.done()
