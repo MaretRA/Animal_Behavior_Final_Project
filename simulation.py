@@ -18,7 +18,13 @@ def get_height():
 # var values width and height, and the vertical arrays have limitless length.
 # this is because when multiple animals move into one square, they will be stacked
 # vertically in that array. Therefore it is limitless.
-array = [[[]] * height] * width
+array = []
+for i in range(width):
+    array.append([])
+    for j in range(height):
+        array[i].append([])
+
+# array = [[[]] * height] * width
 
 # debug
 # print("array:")
@@ -107,10 +113,10 @@ class Turtle:
                             if self.__class__.__name__ == "Coral_Snake":
                                 # need to make it so that coral snakes take both their parents' mimicries and then average it as their own mimicry.
                                 list_of_coral_snakes.append(
-                                    Coral_Snake((x + i - 2), (y + j - 2), mimicry=self.get_mimicry())
+                                    Coral_Snake((x + i - 2), (y + j - 2))
                                     )
                             elif self.__class__.__name__ == "King_Snake":
-                                list_of_king_snakes.append(King_Snake((x + i - 2), (y + j - 2)))
+                                list_of_king_snakes.append(King_Snake((x + i - 2), (y + j - 2), mimicry=self.get_mimicry()))
                             elif self.__class__.__name__ == "Bull_Frog":
                                 list_of_bull_frogs.append(Bull_Frog((x + i - 2), (y + j - 2)))
 
