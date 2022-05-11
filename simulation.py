@@ -151,6 +151,10 @@ class King_Snake(Turtle):
 
     def change_mimicry(self, increment):
         self.mimicry += (increment * 10)
+        if self.mimicry < 0:
+            self.mimicry = 0
+        elif self.mimicry > 100:
+            self.mimicry = 100
     
     def has_died(self):
         super().has_died()
