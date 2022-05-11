@@ -137,6 +137,9 @@ class Coral_Snake(Turtle):
         super().has_died()
         list_of_coral_snakes.remove(self)
 
+    def get_mimicry(self):
+        return self.mimicry
+
 class King_Snake(Turtle):
     def __init__(self, x_position, y_position, mimicry=None, rounds_survived=0):
         super().__init__(x_position, y_position, rounds_survived)
@@ -144,7 +147,7 @@ class King_Snake(Turtle):
             self.mimicry = 0  # randrange(0,100,10) commented out because king snakes aren't given mimicry during setup an they should have 0 mimicry.
         else:
             self.mimicry = mimicry
-            self.change_mimicry(randrange(-1,1))
+            self.change_mimicry(randrange(-1,2))
     
     def get_mimicry(self):
         return self.mimicry
@@ -251,19 +254,26 @@ def game_round():
                 # if there is one bullfrog and one snake in the square, the bullfrog will eat the snake rather than the unsimulated wildlife.
                 # any bullfrog that do not have food, such as three bullfrogs and one snake, will starve. In that scenario, one bullfrog starves.
                 for bull_frog in list_of_bull_frogs_in_square:
-                    # 1/2 chance the bullfrog eats each type of snake, and there must be at least one snake of that type.
-                    if randrange(2) == 0 and len(list_of_coral_snakes_in_square) > 0:
-                        # there is a 50% chance the coral snake survives
-                        if randrange(2) == 0:
-                            list_of_coral_snakes_in_square[0].has_died()
-                            list_of_coral_snakes_in_square.pop(0)
-                        # there is a 60% chance the bullfrog survives (based on scientific evidence). 
-                        if randrange(10) in range(4):
-                            bull_frog.has_died()
-                            list_of_bull_frogs_in_square.remove(bull_frog)
-                    elif len(list_of_king_snakes_in_square) > 0:
-                        list_of_king_snakes_in_square[0].has_died()
-                        list_of_king_snakes_in_square.pop(0)
+                    if len(list_of_coral_snakes_in_square) + len(list_of_king_snakes_in_square) > 0:
+                        lowest_mimicry = None
+                        for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
+                            if not lowest_mimicry or snake.get_mimicry() < lowest_mimicry.get_mimicry():
+                                lowest_mimicry = snake
+                        
+                        if randrange(100) in range(100 - lowest_mimicry.get_mimicry()):
+                            if isinstance(lowest_mimicry, Coral_Snake):
+                                # there is a 50% chance the coral snake survives
+                                if randrange(2) == 0:
+                                    lowest_mimicry.has_died()
+                                    list_of_coral_snakes_in_square.remove(lowest_mimicry)
+                                # there is a 60% chance the bullfrog survives (based on scientific evidence). 
+                                if randrange(10) in range(4):
+                                    bull_frog.has_died()
+                                    list_of_bull_frogs_in_square.remove(bull_frog)
+                                list_of_coral_snakes_in_square.remove(lowest_mimicry)
+                            else:
+                                lowest_mimicry.has_died()
+                                list_of_king_snakes_in_square.remove(lowest_mimicry)
                 
                 # animals are marked as having survived another round:
                 for animal in array[i][j]:
