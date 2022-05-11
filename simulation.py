@@ -286,7 +286,7 @@ def game_round():
                 
                 # bullfrogs that have survived five rounds reproduce. Check if this number makes sense.
                 for bullfrog in list_of_bull_frogs_in_square:
-                    if bullfrog.get_rounds_survived() % 4 == 0:
+                    if bullfrog.get_rounds_survived() % 6 == 0:
                         bullfrog.reproduce()
                 
                 # animals no longer starve
