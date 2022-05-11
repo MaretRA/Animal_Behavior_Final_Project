@@ -113,12 +113,12 @@ class Turtle:
                             if self.__class__.__name__ == "Coral_Snake":
                                 # need to make it so that coral snakes take both their parents' mimicries and then average it as their own mimicry.
                                 list_of_coral_snakes.append(
-                                    Coral_Snake((x + i - 2), (y + j - 2))
+                                    Coral_Snake((x + i - 1), (y + j - 1))
                                     )
                             elif self.__class__.__name__ == "King_Snake":
-                                list_of_king_snakes.append(King_Snake((x + i - 2), (y + j - 2), mimicry=self.get_mimicry()))
+                                list_of_king_snakes.append(King_Snake((x + i - 1), (y + j - 1), mimicry=self.get_mimicry()))
                             elif self.__class__.__name__ == "Bull_Frog":
-                                list_of_bull_frogs.append(Bull_Frog((x + i - 2), (y + j - 2)))
+                                list_of_bull_frogs.append(Bull_Frog((x + i - 1), (y + j - 1)))
 
                             # sets reproduced to true so that the rest of the loops break and the animal doesn't reproduce twice
                             reproduced = True
@@ -326,6 +326,6 @@ def main():
         print("Number of king snakes: %s" % len(list_of_king_snakes))
         print("Number of bullfrogs: %s" % len(list_of_bull_frogs))
         print("\n\n")
-        print("Average color pattern match for king snakes: %s" % (1.0 * sum([snake.get_mimicry() for snake in list_of_coral_snakes])/len(list_of_coral_snakes)))
+        print("Average color pattern match for king snakes: %s" % (1.0 * sum([snake.get_mimicry() for snake in list_of_king_snakes])/len(list_of_king_snakes)))
 
 main()
