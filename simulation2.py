@@ -81,6 +81,8 @@ def startsimulation():
                 possible_starting_locations.append([i,j])
         
         if coralsnake_input.get() + kingsnake_input.get() + bullfrog_input.get() > len(possible_starting_locations):
+            message.set("Error, more animals than starting locations.")
+            state.set("Ready to Simulate")
             return "Error, more animals than starting locations."
         
         # adds the coral_snakes
@@ -131,7 +133,7 @@ def startsimulation():
         state.set("Done Simulating.")
 
     else:
-        message.set("Wait for Grid to Load")
+        message.set("Error")
 
 
     # simulation
