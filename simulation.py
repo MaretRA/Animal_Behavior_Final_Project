@@ -147,9 +147,9 @@ class King_Snake(Turtle):
             self.mimicry = 0  # randrange(0,100,10) commented out because king snakes aren't given mimicry during setup an they should have 0 mimicry.
         else:
             self.mimicry = mimicry
-            print("parent mimicry: %s" % mimicry)
-            self.change_mimicry(randrange(-2,3))
-            print("child mimicry: %s" % self.mimicry)
+            # print("parent mimicry: %s" % mimicry)
+            self.change_mimicry(randrange(-2,3))  # -2,3
+            # print("child mimicry: %s" % self.mimicry)
     
     def get_mimicry(self):
         return self.mimicry
@@ -270,13 +270,16 @@ def game_round():
                 # if there is one bullfrog and one snake in the square, the bullfrog will eat the snake rather than the unsimulated wildlife.
                 # any bullfrog that do not have food, such as three bullfrogs and one snake, will starve. In that scenario, one bullfrog starves.
                 for bull_frog in list_of_bull_frogs_in_square:
+                    # there's a 30% chance the bullfrog will try to eat a snake
+                    if randrange(10) in range(7):
+                        continue
                     if len(list_of_coral_snakes_in_square) + len(list_of_king_snakes_in_square) > 0:
                         lowest_mimicry = None
                         for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
                             if lowest_mimicry is None or snake.get_mimicry() < lowest_mimicry.get_mimicry():
                                 lowest_mimicry = snake
                         
-                        if randrange(100) in range(100 - lowest_mimicry.get_mimicry()):
+                        if randrange(100) in range(110 - lowest_mimicry.get_mimicry()):
                             if isinstance(lowest_mimicry, Coral_Snake):
                                 # there is a 50% chance the coral snake survives
                                 if randrange(2) == 0:
@@ -286,7 +289,6 @@ def game_round():
                                 if randrange(10) in range(4):
                                     bull_frog.has_died()
                                     list_of_bull_frogs_in_square.remove(bull_frog)
-                                list_of_coral_snakes_in_square.remove(lowest_mimicry)
                             else:
                                 lowest_mimicry.has_died()
                                 list_of_king_snakes_in_square.remove(lowest_mimicry)
@@ -302,23 +304,31 @@ def game_round():
                 
                 # bullfrogs that have survived five rounds reproduce. Check if this number makes sense.
                 for bullfrog in list_of_bull_frogs_in_square:
-                    if bullfrog.get_rounds_survived() % 6 == 0:
+                    if bullfrog.get_rounds_survived() % 7 == 0:
                         bullfrog.reproduce()
                 
                 # not true # animals no longer starve
 
                 # if there is more than one snake in a square, further snakes will starve
-                first = True
-                coral_or_king = randrange(2)
-                for snake in ((list_of_coral_snakes_in_square + list_of_king_snakes_in_square) if coral_or_king==0 else (list_of_king_snakes_in_square + list_of_coral_snakes_in_square)):
-                    if not first:
-                        snake.has_died()
-                        if isinstance(snake, Coral_Snake):
-                            list_of_coral_snakes_in_square.remove(snake)
-                        else:
-                            list_of_king_snakes_in_square.remove(snake)
+                if len(list_of_coral_snakes_in_square) > 0 and len(list_of_king_snakes_in_square) > 0:
+                    coral_or_king = randrange(2)
+                    if coral_or_king == 0:
+                        lucky_snake = list_of_coral_snakes_in_square[0]
                     else:
-                        first = False
+                        lucky_snake = list_of_king_snakes_in_square[0]
+                elif len(list_of_coral_snakes_in_square) > 1:
+                    lucky_snake = list_of_coral_snakes_in_square[0]
+                elif len(list_of_king_snakes_in_square) > 1:
+                    lucky_snake = list_of_king_snakes_in_square[0]
+
+                if len(list_of_king_snakes_in_square) + len(list_of_coral_snakes_in_square) > 1:
+                    for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
+                        if snake is not lucky_snake:
+                            snake.has_died()
+                            if isinstance(snake, Coral_Snake):
+                                list_of_coral_snakes_in_square.remove(snake)
+                            else:
+                                list_of_king_snakes_in_square.remove(snake)
                 
                 # if there are more than two bullfrogs in a square, the bullfrog will starve. This may be subject to change later.
                 # the previous idea I had for this scenario was to have the extra bullfrogs move to adjacent squares, but 
@@ -347,7 +357,7 @@ def game_round():
 
 # main function. 
 def main():
-    setup(80, 120, 20)
+    setup(80, 80, 20)
 
     # current number of rounds. In the simulation it will be infinite? Or will the user set how many rounds?
     for i in range(200):
