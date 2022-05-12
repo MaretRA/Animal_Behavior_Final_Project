@@ -272,7 +272,7 @@ def game_round():
                 # if there is one bullfrog and one snake in the square, the bullfrog will eat the snake rather than the unsimulated wildlife.
                 # any bullfrog that do not have food, such as three bullfrogs and one snake, will starve. In that scenario, one bullfrog starves.
                 for bull_frog in list_of_bull_frogs_in_square:
-                    # there's a 30% chance the bullfrog will try to eat a snake
+                    # there's a 60% chance the bullfrog will try to eat a snake
                     if randrange(10) in range(4):
                         continue
                     if len(list_of_coral_snakes_in_square) + len(list_of_king_snakes_in_square) > 0:
@@ -294,69 +294,6 @@ def game_round():
                             else:
                                 lowest_mimicry.has_died()
                                 list_of_king_snakes_in_square.remove(lowest_mimicry)
-                
-                # # animals are marked as having survived another round:
-                # for animal in array[i][j]:
-                #     animal.survived_another_round()
-
-                # # king snakes lay more eggs than coral snakes. In this simulation, that is being modeled as reproducing more often.
-                # for snake in list_of_king_snakes_in_square:
-                #     if snake.get_rounds_survived() % 4 == 0:
-                #         reproduced = snake.reproduce()
-                #         # snake.reproduce()
-                #         if isinstance(snake, King_Snake) and not reproduced:
-                #             snake.change_mimicry(randrange(-2,3))
-                # # snakes that have survived four rounds reproduce. Check if this number makes sense. 
-                # # used to be all snakes, now this is just coral snakes.
-                # for snake in list_of_coral_snakes_in_square:
-                #     if snake.get_rounds_survived() % 6 == 0:
-                #         reproduced = snake.reproduce()
-                #         # snake.reproduce()
-                #         # if isinstance(snake, King_Snake) and not reproduced:
-                #         #     snake.change_mimicry(randrange(-2,3))
-                
-                # # bullfrogs that have survived six rounds reproduce. Check if this number makes sense.
-                # for bullfrog in list_of_bull_frogs_in_square:
-                #     if bullfrog.get_rounds_survived() % 6 == 0:
-                #         bullfrog.reproduce()
-                #         # bullfrog.reproduce()
-                
-                # not true # animals no longer starve
-
-                # # if there is more than one snake in a square, further snakes will starve
-                # if len(list_of_coral_snakes_in_square) > 0 and len(list_of_king_snakes_in_square) > 0:
-                #     coral_or_king = randrange(2)
-                #     if coral_or_king == 0:
-                #         lucky_snake = list_of_coral_snakes_in_square[0]
-                #     else:
-                #         lucky_snake = list_of_king_snakes_in_square[0]
-                # elif len(list_of_coral_snakes_in_square) > 1:
-                #     lucky_snake = list_of_coral_snakes_in_square[0]
-                # elif len(list_of_king_snakes_in_square) > 1:
-                #     lucky_snake = list_of_king_snakes_in_square[0]
-
-                # if len(list_of_king_snakes_in_square) + len(list_of_coral_snakes_in_square) > 1:
-                #     for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
-                #         if snake is not lucky_snake:
-                #             snake.has_died()
-                #             if isinstance(snake, Coral_Snake):
-                #                 list_of_coral_snakes_in_square.remove(snake)
-                #             else:
-                #                 list_of_king_snakes_in_square.remove(snake)
-                
-                # # if there are more than two bullfrogs in a square, the bullfrog will starve. This may be subject to change later.
-                # # the previous idea I had for this scenario was to have the extra bullfrogs move to adjacent squares, but 
-                # # since the simulation occurs one square at a time that would lead to the bullfrog being used again in that square.
-                # # the other way to do this is to wait for this double for loop to end and then run another one just to have the bullfrogs move.
-                # # but for now let's just starve them. This also deals with the potential overpopulation issues. And if we have bullfrogs move,
-                # # then snakes should move too. Which can of course be done in the same way.
-                # first = True
-                # for bullfrog in list_of_bull_frogs_in_square:
-                #     if not first:
-                #         bullfrog.has_died()
-                #         list_of_bull_frogs_in_square.remove(bullfrog)
-                #     else:
-                #         first = False
     
     # animals that will starve instead move to an open orthogonal square. If there is no open square, they starve.
     # first starvation happens, then reproduction happens.
@@ -434,34 +371,25 @@ def game_round():
 
     # king snakes lay more eggs than coral snakes. In this simulation, that is being modeled as reproducing more often.
     for snake in list_of_king_snakes:
-        if snake.get_rounds_survived() % 4 == 0:
+        if snake.get_rounds_survived() % 5 == 0:
             reproduced = snake.reproduce()
             if not reproduced:
                 snake.change_mimicry(randrange(-2,3))
     # snakes that have survived four rounds reproduce. Check if this number makes sense. 
     # used to be all snakes, now this is just coral snakes.
     for snake in list_of_coral_snakes:
-        if snake.get_rounds_survived() % 4 == 0:
+        if snake.get_rounds_survived() % 5 == 0:
             reproduced = snake.reproduce()
     
     # bullfrogs that have survived six rounds reproduce. Check if this number makes sense.
     for bullfrog in list_of_bull_frogs:
-        if bullfrog.get_rounds_survived() % 6 == 0:
+        if bullfrog.get_rounds_survived() % 8 == 0:
             bullfrog.reproduce()
-
-# the final thing that needs to be added in (besides the code that needs to be written to replace the comments) is the ui.
-# each square will support only two animals: up to one snake and one bullfrog. When the animals move it will be shown on the ui, and 
-# then after all the movements have been made, animals will die and reproduce. There should also be sliders, to set the starting
-# numbers of coral snakes, king snakes, and bull frogs, and there should be counters to show the current number of each. 
-# and maybe also counters to show the percentage of king snakes that have each percentage of matching pattern.
-
-# lastly, for the matching pattern for king snakes, I propose we represent this by making coral snakes a vibrant red, and king
-# snakes a vibrant blue, and over time they become more red. 
 
 
 # main function. 
 def main():
-    setup(120, 120, 80)
+    setup(120, 120, 100)
 
     # current number of rounds. In the simulation it will be infinite? Or will the user set how many rounds?
     for i in range(200):
