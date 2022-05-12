@@ -44,7 +44,7 @@ list_of_bull_frogs = []
 class Turtle:
 
     def __init__(self, x_position, y_position, rounds_survived=0):
-        print("x and y position: %s %s" % (x_position, y_position))
+        # print("x and y position: %s %s" % (x_position, y_position))
         self.x = x_position
         self.y = y_position
         array[x_position][y_position].append(self)
@@ -87,7 +87,7 @@ class Turtle:
             return "error"
         
         # debugging
-        print("Move from %s %s to %s %s" % (self.x, self.y, x, y))
+        # print("Move from %s %s to %s %s" % (self.x, self.y, x, y))
 
         # changes the x and y values of the animal
         self.x = x
@@ -125,7 +125,7 @@ class Turtle:
                             break
     
     def has_died(self):
-        print("I'm at %s %s" % (self.x, self.y))
+        # print("I'm at %s %s" % (self.x, self.y))
         array[self.x][self.y].remove(self)
 
 class Coral_Snake(Turtle):
@@ -143,11 +143,13 @@ class Coral_Snake(Turtle):
 class King_Snake(Turtle):
     def __init__(self, x_position, y_position, mimicry=None, rounds_survived=0):
         super().__init__(x_position, y_position, rounds_survived)
-        if not mimicry:
+        if mimicry is None:
             self.mimicry = 0  # randrange(0,100,10) commented out because king snakes aren't given mimicry during setup an they should have 0 mimicry.
         else:
             self.mimicry = mimicry
-            self.change_mimicry(randrange(-1,2))
+            print("parent mimicry: %s" % mimicry)
+            self.change_mimicry(randrange(-2,3))
+            print("child mimicry: %s" % self.mimicry)
     
     def get_mimicry(self):
         return self.mimicry
@@ -189,22 +191,22 @@ def setup(num_coral_snakes, num_king_snakes, num_bullfrogs):
         ind = randrange(len(possible_starting_locations))
         indices = possible_starting_locations[ind]
         # prints indices for debugging purposes.
-        print("indices[0] = %s, indices[1] = %s" % (indices[0], indices[1]))
-        list_of_coral_snakes.append(Coral_Snake(indices[0], indices[1], randrange(4)))
+        # print("indices[0] = %s, indices[1] = %s" % (indices[0], indices[1]))
+        list_of_coral_snakes.append(Coral_Snake(indices[0], indices[1], rounds_survived=randrange(4)))
         del possible_starting_locations[ind]
     
     # adds the king snakes
     for ks in range(num_king_snakes):
         ind = randrange(len(possible_starting_locations))
         indices = possible_starting_locations[ind]
-        list_of_king_snakes.append(King_Snake(indices[0], indices[1], randrange(4)))
+        list_of_king_snakes.append(King_Snake(indices[0], indices[1], rounds_survived=randrange(4)))
         del possible_starting_locations[ind]
 
     # adds the bullfrogs
     for bf in range(num_bullfrogs):
         ind =randrange(len(possible_starting_locations))
         indices = possible_starting_locations[ind]
-        list_of_bull_frogs.append(Bull_Frog(indices[0], indices[1], randrange(4)))
+        list_of_bull_frogs.append(Bull_Frog(indices[0], indices[1], rounds_survived=randrange(4)))
         del possible_starting_locations[ind]
         
 
@@ -234,8 +236,8 @@ def game_round():
     for i in range(len(array)):
         for j in range(len(array[i])):
             # only proceeds if the list isn't empty
-            print("\n\n At array[%s][%s]:" % (i, j))
-            print(array[i][j])
+            # print("\n\n At array[%s][%s]:" % (i, j))
+            # print(array[i][j])
             if array[i][j]:
                 list_of_bull_frogs_in_square = []
                 list_of_coral_snakes_in_square = []
@@ -247,6 +249,20 @@ def game_round():
                         list_of_coral_snakes_in_square.append(animal)
                     elif isinstance(animal, King_Snake):
                         list_of_king_snakes_in_square.append(animal)
+
+                # first the king snakes try to eat the coral snake
+                for king_snake in list_of_king_snakes_in_square:
+                    if len(list_of_coral_snakes_in_square) > 0:
+                        # if this is true, the king snake tries to eat the coral snake
+                        if randrange(100) in range(15):
+                            if randrange(2) == 0:
+                                # coral snake dies
+                                list_of_coral_snakes_in_square[0].has_died()
+                                del list_of_coral_snakes_in_square[0]
+                            if randrange(10) not in range(7):
+                                # king snake dies
+                                king_snake.has_died()
+                                list_of_king_snakes_in_square.remove(king_snake)
                 
                 # first the bull frogs eat the snakes
                 # each bullfrog eats one snake. 
@@ -257,7 +273,7 @@ def game_round():
                     if len(list_of_coral_snakes_in_square) + len(list_of_king_snakes_in_square) > 0:
                         lowest_mimicry = None
                         for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
-                            if not lowest_mimicry or snake.get_mimicry() < lowest_mimicry.get_mimicry():
+                            if lowest_mimicry is None or snake.get_mimicry() < lowest_mimicry.get_mimicry():
                                 lowest_mimicry = snake
                         
                         if randrange(100) in range(100 - lowest_mimicry.get_mimicry()):
@@ -289,33 +305,34 @@ def game_round():
                     if bullfrog.get_rounds_survived() % 6 == 0:
                         bullfrog.reproduce()
                 
-                # animals no longer starve
+                # not true # animals no longer starve
 
-                # # if there is more than one snake in a square, further snakes will starve
-                # first = True
-                # for snake in list_of_coral_snakes_in_square + list_of_king_snakes_in_square:
-                #     if not first:
-                #         snake.has_died()
-                #         if isinstance(snake, Coral_Snake):
-                #             list_of_coral_snakes_in_square.remove(snake)
-                #         else:
-                #             list_of_king_snakes_in_square.remove(snake)
-                #     else:
-                #         first = False
+                # if there is more than one snake in a square, further snakes will starve
+                first = True
+                coral_or_king = randrange(2)
+                for snake in ((list_of_coral_snakes_in_square + list_of_king_snakes_in_square) if coral_or_king==0 else (list_of_king_snakes_in_square + list_of_coral_snakes_in_square)):
+                    if not first:
+                        snake.has_died()
+                        if isinstance(snake, Coral_Snake):
+                            list_of_coral_snakes_in_square.remove(snake)
+                        else:
+                            list_of_king_snakes_in_square.remove(snake)
+                    else:
+                        first = False
                 
-                # # if there are more than two bullfrogs in a square, the bullfrog will starve. This may be subject to change later.
-                # # the previous idea I had for this scenario was to have the extra bullfrogs move to adjacent squares, but 
-                # # since the simulation occurs one square at a time that would lead to the bullfrog being used again in that square.
-                # # the other way to do this is to wait for this double for loop to end and then run another one just to have the bullfrogs move.
-                # # but for now let's just starve them. This also deals with the potential overpopulation issues. And if we have bullfrogs move,
-                # # then snakes should move too. Which can of course be done in the same way.
-                # first = True
-                # for bullfrog in list_of_bull_frogs_in_square:
-                #     if not first:
-                #         bullfrog.has_died()
-                #         list_of_bull_frogs_in_square.remove(bullfrog)
-                #     else:
-                #         first = False
+                # if there are more than two bullfrogs in a square, the bullfrog will starve. This may be subject to change later.
+                # the previous idea I had for this scenario was to have the extra bullfrogs move to adjacent squares, but 
+                # since the simulation occurs one square at a time that would lead to the bullfrog being used again in that square.
+                # the other way to do this is to wait for this double for loop to end and then run another one just to have the bullfrogs move.
+                # but for now let's just starve them. This also deals with the potential overpopulation issues. And if we have bullfrogs move,
+                # then snakes should move too. Which can of course be done in the same way.
+                first = True
+                for bullfrog in list_of_bull_frogs_in_square:
+                    if not first:
+                        bullfrog.has_died()
+                        list_of_bull_frogs_in_square.remove(bullfrog)
+                    else:
+                        first = False
 
 
 # the final thing that needs to be added in (besides the code that needs to be written to replace the comments) is the ui.
@@ -330,16 +347,22 @@ def game_round():
 
 # main function. 
 def main():
-    setup(40, 40, 40)
-    print(array)
+    setup(80, 120, 20)
 
     # current number of rounds. In the simulation it will be infinite? Or will the user set how many rounds?
-    for i in range(20):
+    for i in range(200):
         game_round()
+        print("Game round: %s" % str(i+1))
         print("Number of coral snakes: %s" % len(list_of_coral_snakes))
         print("Number of king snakes: %s" % len(list_of_king_snakes))
         print("Number of bullfrogs: %s" % len(list_of_bull_frogs))
-        print("\n\n")
-        print("Average color pattern match for king snakes: %s" % (1.0 * sum([snake.get_mimicry() for snake in list_of_king_snakes])/len(list_of_king_snakes)))
+        # print("\n\n")
+        print("Average color pattern match for king snakes: %s" % (1.0 * sum([snake.get_mimicry() for snake in list_of_king_snakes])/len(list_of_king_snakes)) if len(list_of_king_snakes) > 0 else "They are all dead.")
+
+    print([snake.get_mimicry() for snake in list_of_king_snakes])
+    # for king_snake in list_of_king_snakes:
+        # print("x y coords: %s %s" % (king_snake.get_x_position(), king_snake.get_y_position()))
+        # print("at that square:")
+        # print(array[king_snake.get_x_position()][king_snake.get_y_position()])
 
 main()
