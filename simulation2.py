@@ -82,7 +82,7 @@ def startsimulation():
         
         if coralsnake_input.get() + kingsnake_input.get() + bullfrog_input.get() > len(possible_starting_locations):
             message.set("Error, more animals than starting locations.")
-            state.set("Ready to Simulate")
+            state.set("Done Simulating.")
             return "Error, more animals than starting locations."
         
         # adds the coral_snakes
