@@ -464,7 +464,7 @@ def main():
     setup(120, 120, 80)
 
     # current number of rounds. In the simulation it will be infinite? Or will the user set how many rounds?
-    for i in range(250):
+    for i in range(200):
         game_round()
         print("Game round: %s" % str(i+1))
         print("Number of coral snakes: %s" % len(list_of_coral_snakes))
