@@ -130,8 +130,8 @@ class Turtle:
         return False
     
     def has_died(self):
-        print("I died at %s %s" % (self.x, self.y))
-        print(array[self.x][self.y])
+        # print("I died at %s %s" % (self.x, self.y))
+        # print(array[self.x][self.y])
         array[self.x][self.y].remove(self)
 
 class Coral_Snake(Turtle):
@@ -268,7 +268,7 @@ def game_round():
                             if randrange(10) not in range(7):
                                 # king snake dies
                                 king_snake.has_died()
-                                print("the above king snake was eaten by a coral snake")
+                                # print("the above king snake was eaten by a coral snake")
                                 list_of_king_snakes_in_square.remove(king_snake)
                 
                 # first the bull frogs eat the snakes
@@ -298,7 +298,7 @@ def game_round():
                                     list_of_bull_frogs_in_square.remove(bull_frog)
                             else:
                                 lowest_mimicry.has_died()
-                                print("the king snake in this square was eaten by a bullfrog")
+                                # print("the king snake in this square was eaten by a bullfrog")
                                 list_of_king_snakes_in_square.remove(lowest_mimicry)
     
     # animals that will starve instead move to an open orthogonal square. If there is no open square, they starve.
@@ -361,7 +361,7 @@ def game_round():
                                 list_of_coral_snakes_in_square.remove(snake)
                             else:
                                 list_of_king_snakes_in_square.remove(snake)
-                                print("the kingsnake above died from starvation")
+                                # print("the kingsnake above died from starvation")
 
             # now the bullfrogs move and starve.
             if len(list_of_bull_frogs_in_square) > 1:
@@ -406,10 +406,10 @@ def game_round():
 
 # main function. 
 def main():
-    setup(120, 120, 60)  # 120, 120, 100
+    setup(120, 120, 90)  # 120, 120, 100
 
     # current number of rounds. In the simulation it will be infinite? Or will the user set how many rounds?
-    for i in range(200):
+    for i in range(150):
         game_round()
         print("Game round: %s" % str(i+1))
         print("Number of coral snakes: %s" % len(list_of_coral_snakes))
