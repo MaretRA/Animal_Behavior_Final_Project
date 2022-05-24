@@ -261,6 +261,8 @@ def game_round():
                     return None
                 
                 animal.move(list_of_possible_directions[randrange(len(list_of_possible_directions))])
+
+                return True
             
             # the starving animals will move. If they cannot move (move_to_survive returns 0) then they die.
 
@@ -302,22 +304,30 @@ def game_round():
     for animal in list_of_bull_frogs + list_of_coral_snakes + list_of_king_snakes:
         animal.survived_another_round()
 
+    # creates list of newly created animals this round that should not reproduced.
+    animals_that_cant_reproduce = []
+
     # king snakes lay more eggs than coral snakes. In this simulation, that is being modeled as reproducing more often.
     for snake in list_of_king_snakes:
-        if snake.get_rounds_survived() % 5 == 0:
+        if snake not in animals_that_cant_reproduce and snake.get_rounds_survived() % 5 == 0:
             reproduced = snake.reproduce()
+            animals_that_cant_reproduce.append(reproduced)
             if not reproduced:
                 snake.change_mimicry(randrange(-2,3))
     # snakes that have survived four rounds reproduce. Check if this number makes sense. 
     # used to be all snakes, now this is just coral snakes.
     for snake in list_of_coral_snakes:
-        if snake.get_rounds_survived() % 5 == 0:
+        if snake not in animals_that_cant_reproduce and snake.get_rounds_survived() % 5 == 0:
             reproduced = snake.reproduce()
+            animals_that_cant_reproduce.append(reproduced)
     
     # bullfrogs that have survived six rounds reproduce. Check if this number makes sense.
     for bullfrog in list_of_bull_frogs:
-        if bullfrog.get_rounds_survived() % 8 == 0:
-            bullfrog.reproduce()
+        if bullfrog not in animals_that_cant_reproduce and bullfrog.get_rounds_survived() % 8 == 0:
+            reproduced = bullfrog.reproduce()
+            animals_that_cant_reproduce.append(reproduced)
+    
+    animals_that_cant_reproduce.clear()
 
     if list_of_king_snakes:
         t.color(100+int(math.ceil((1.0 * sum([snake.get_mimicry() for snake in list_of_king_snakes])/len(list_of_king_snakes))*1.5)), 
@@ -660,14 +670,19 @@ class Turtle:
                                 list_of_coral_snakes.append(
                                     Coral_Snake((x + i - 1), (y + j - 1))
                                     )
+                                return list_of_coral_snakes[-1]
                             elif self.__class__.__name__ == "King_Snake":
                                 list_of_king_snakes.append(King_Snake((x + i - 1), (y + j - 1), mimicry=self.get_mimicry()))
+                                return list_of_king_snakes[-1]
                             elif self.__class__.__name__ == "Bull_Frog":
                                 list_of_bull_frogs.append(Bull_Frog((x + i - 1), (y + j - 1)))
+                                return list_of_bull_frogs[-1]
 
                             # sets reproduced to true so that the rest of the loops break and the animal doesn't reproduce twice
                             reproduced = True
                             break
+        
+        return False
     
     def has_died(self):
         print("I'm at %s %s" % (self.x, self.y))
